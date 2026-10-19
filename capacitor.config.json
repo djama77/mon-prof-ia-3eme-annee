@@ -1,0 +1,8 @@
+{
+  "appId": "dj.monprofia.troisieme",
+  "appName": "Mon Prof IA - 3eme Annee",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
