@@ -65,6 +65,39 @@ jobs:
           APKSIGNER="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -1)"
           test -n "$APKSIGNER"
           "$APKSIGNER" verify --verbose "$APK"
+      - name: Build clean-install diagnostic APK
+        run: |
+          set -e
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('android/app/build.gradle')
+          s=p.read_text()
+          original='applicationId "dj.monprofia.troisieme"'
+          replacement='applicationId "dj.monprofia.troisieme.cleaninstall"'
+          if original not in s:
+              raise SystemExit('Expected applicationId not found; cannot safely build diagnostic variant')
+          p.write_text(s.replace(original,replacement,1))
+          PY
+          cd android
+          bash ./gradlew assembleDebug --no-daemon
+          mkdir -p ../diagnostic-apk
+          cp app/build/outputs/apk/debug/app-debug.apk ../diagnostic-apk/mon-prof-ia-installation-propre.apk
+      - name: Verify clean-install APK
+        run: |
+          set -e
+          APK=diagnostic-apk/mon-prof-ia-installation-propre.apk
+          test -s "$APK"
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -1)"
+          "$APKSIGNER" verify --verbose "$APK"
+          AAPT="$(find "$ANDROID_HOME/build-tools" -type f -name aapt | sort -V | tail -1)"
+          "$AAPT" dump badging "$APK" | grep "package: name='dj.monprofia.troisieme.cleaninstall'"
+          sha256sum "$APK"
+      - name: Publish clean-install diagnostic APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: mon-prof-ia-installation-propre
+          path: diagnostic-apk/mon-prof-ia-installation-propre.apk
+          if-no-files-found: error
       - name: Publish APK artifact
         uses: actions/upload-artifact@v4
         with:
