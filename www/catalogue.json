@@ -1,0 +1,37 @@
+[
+  {
+    "id": "francais",
+    "matiere": "Français",
+    "file": "pdf/francais.pdf"
+  },
+  {
+    "id": "maths",
+    "matiere": "Mathématiques",
+    "file": "pdf/maths.pdf"
+  },
+  {
+    "id": "arabe",
+    "matiere": "Arabe",
+    "file": "pdf/arabe.pdf"
+  },
+  {
+    "id": "anglais",
+    "matiere": "Anglais",
+    "file": "pdf/anglais.pdf"
+  },
+  {
+    "id": "sciences",
+    "matiere": "Sciences expérimentales",
+    "file": "pdf/sciences.pdf"
+  },
+  {
+    "id": "emci",
+    "matiere": "EMCI",
+    "file": "pdf/emci.pdf"
+  },
+  {
+    "id": "histoire",
+    "matiere": "Histoire-géographie",
+    "file": "pdf/histoire.pdf"
+  }
+]
