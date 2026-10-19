@@ -51,6 +51,20 @@ jobs:
           unzip -t "$APK" | tail -n 1
           "$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -n1)/apksigner" verify --verbose "$APK"
           sha256sum "$APK"
+      - name: Verify generated APK
+        run: |
+          set -e
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          echo "APK SHA-256:"
+          sha256sum "$APK"
+          echo "APK file format:"
+          file "$APK"
+          unzip -t "$APK" | tail -n 2
+          echo "APK signing certificates:"
+          APKSIGNER="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -1)"
+          test -n "$APKSIGNER"
+          "$APKSIGNER" verify --verbose "$APK"
       - name: Publish APK artifact
         uses: actions/upload-artifact@v4
         with:
