@@ -29,13 +29,28 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Verify application
         run: npm test
+      - name: Check JavaScript syntax
+        run: node --check www/app.js
       - name: Create Android project
         run: npx cap add android
       - name: Synchronize app
         run: npx cap sync android
+      - name: Verify bundled web assets
+        run: |
+          test -s android/app/src/main/assets/public/index.html
+          test -s android/app/src/main/assets/public/app.js
+          test -s android/app/src/main/assets/public/style.css
+          grep -q 'Mon Prof IA' android/app/src/main/assets/public/index.html
       - name: Build debug APK
         working-directory: android
         run: bash ./gradlew assembleDebug --no-daemon
+      - name: Verify APK signature and contents
+        run: |
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          unzip -t "$APK" | tail -n 1
+          "$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -n1)/apksigner" verify --verbose "$APK"
+          sha256sum "$APK"
       - name: Publish APK artifact
         uses: actions/upload-artifact@v4
         with:
